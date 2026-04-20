@@ -2,122 +2,84 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agronex | Akıllı Hayvan Takip Sistemi</title>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
-    
+    <title>AgroCore | Yönetim Paneli</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; margin: 0; padding: 0; }
-        .navbar { background-color: #2c3e50; color: white; padding: 1rem; text-align: center; }
-        .container { max-width: 1000px; margin: 20px auto; padding: 20px; }
-        
-        /* Alarm Paneli */
-        #alarm-panel { 
-            display: none; 
-            background-color: #e74c3c; color: white; 
-            padding: 20px; border-radius: 10px; 
-            text-align: center; margin-bottom: 20px;
-            animation: blinker 1s linear infinite;
-        }
-        @keyframes blinker { 50% { opacity: 0.5; } }
-
-        /* Kart Yapıları */
-        .dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
-        .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .temp-display { font-size: 3rem; font-weight: bold; color: #27ae60; }
-
-        /* Tablo Stili */
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
-        th { background-color: #27ae60; color: white; }
-        tr:hover { background-color: #f1f1f1; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); }
+        body { background-color: #0b0f1a; color: white; }
     </style>
 </head>
 <body>
 
-    <div class="navbar">
-        <h1>AGRONEX PUSH X</h1>
-        <p>Geleceğin Hayvancılık Teknolojileri</p>
-    </div>
-
-    <div class="container">
-        <div id="alarm-panel">
-            <h2 style="margin:0;">⚠️ KRİTİK UYARI: YÜKSEK ATEŞ TESPİT EDİLDİ!</h2>
-            <p id="alarm-info">Lütfen hayvanın durumunu kontrol edin.</p>
-        </div>
-
-        <div class="dashboard">
-            <div class="card">
-                <h3>📍 Canlı Takip (İnek 01)</h3>
-                <div id="temp-box" class="temp-display">-- °C</div>
-                <p id="status-text">Durum: Veri bekleniyor...</p>
-                <small id="last-update">Son güncelleme: --:--</small>
+    <div id="login-screen" class="min-h-screen flex items-center justify-center p-6">
+        <div class="glass p-10 rounded-3xl w-full max-w-md text-center">
+            <h1 class="text-4xl font-bold text-emerald-500 mb-2">AgroCore</h1>
+            <p class="text-gray-400 mb-8">Tarımın Geleceğine Giriş Yapın</p>
+            
+            <input type="email" id="user-email" placeholder="Gmail Adresiniz" 
+                   class="w-full bg-slate-900 border border-slate-700 p-3 rounded-xl mb-4 focus:border-emerald-500 outline-none">
+            
+            <button onclick="loginKontrol()" class="w-full bg-emerald-600 hover:bg-emerald-500 p-3 rounded-xl font-bold transition">
+                Giriş Yap / Üye Ol
+            </button>
+            
+            <div class="mt-6 flex items-center justify-center gap-2 text-sm text-gray-500">
+                <div class="h-[1px] w-10 bg-gray-700"></div>
+                <span>veya</span>
+                <div class="h-[1px] w-10 bg-gray-700"></div>
             </div>
 
-            <div class="card" style="grid-column: span 2;">
-                <h3>📊 Geçmiş Kayıtlar (Log Sistemi)</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Tarih / Saat</th>
-                            <th>ID</th>
-                            <th>Sıcaklık</th>
-                            <th>Durum</th>
-                        </tr>
-                    </thead>
-                    <tbody id="history-body">
-                        </tbody>
-                </table>
+            <button class="mt-4 flex items-center justify-center gap-2 w-full bg-white text-black p-3 rounded-xl font-semibold hover:bg-gray-200 transition">
+                <img src="https://www.google.com/favicon.ico" class="w-4 h-4"> Google ile Devam Et
+            </button>
+        </div>
+    </div>
+
+    <div id="main-panel" class="hidden p-8">
+        <h2 class="text-2xl font-bold">Hoş Geldin, <span id="user-display"></span></h2>
+        <div class="grid grid-cols-2 gap-6 mt-8">
+            <div class="glass p-8 rounded-2xl">
+                <h3>Vücut Sıcaklığı</h3>
+                <p id="web-sicaklik" class="text-5xl font-mono text-emerald-400">--</p>
+            </div>
+            <div class="glass p-8 rounded-2xl">
+                <h3>Hareket Aktivitesi</h3>
+                <p id="web-hareket" class="text-5xl font-mono text-blue-400">--</p>
             </div>
         </div>
     </div>
 
     <script>
-        // --- FIREBASE AYARLARI ---
-        // Buradaki bilgileri Firebase konsolundan (Proje Ayarları) alıp güncellemelisin!
-        const firebaseConfig = {
-            apiKey: "SENIN_API_KEY",
-            databaseURL: "SENIN_DATABASE_URL",
-            projectId: "SENIN_PROJECT_ID",
+        // --- İSTASYON VERİLERİ ALANI ---
+        // Bileklik hazır olduğunda ESP32 üzerinden gelen veriler buraya akacak.
+        let ISTASYON_VERILERI = {
+            sicaklik: "38.5",
+            hareket: "Yüksek",
+            cihazDurumu: "Aktif",
+            sonGuncelleme: new Date().toLocaleTimeString()
         };
-        
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
 
-        // --- VERİ ÇEKME VE İŞLEME ---
-        const tempRef = database.ref('inekler/inek1');
-
-        tempRef.on('value', (snapshot) => {
-            const data = snapshot.val();
-            const temp = data.sicaklik;
-            const time = new Date().toLocaleTimeString();
-
-            // Ekranı Güncelle
-            document.getElementById("temp-box").innerText = temp + " °C";
-            document.getElementById("last-update").innerText = "Son güncelleme: " + time;
-
-            // ALARM KONTROLÜ (39.5 Derece üstü alarm verir)
-            if (temp > 39.5) {
-                document.getElementById("alarm-panel").style.display = "block";
-                document.getElementById("temp-box").style.color = "#e74c3c";
-                document.getElementById("status-text").innerText = "Durum: TEHLİKELİ";
+        function loginKontrol() {
+            const email = document.getElementById('user-email').value;
+            
+            // Gmail kontrolü (Saçma mailleri engeller)
+            if (email.includes("@gmail.com") && email.length > 12) {
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('main-panel').classList.remove('hidden');
+                document.getElementById('user-display').innerText = email.split('@')[0];
+                
+                // Panel açılınca verileri yükle
+                verileriGuncelle();
             } else {
-                document.getElementById("alarm-panel").style.display = "none";
-                document.getElementById("temp-box").style.color = "#27ae60";
-                document.getElementById("status-text").innerText = "Durum: Normal";
+                alert("Lütfen geçerli bir @gmail.com adresi giriniz!");
             }
+        }
 
-            // TABLOYA EKLE (Yeni veriyi en üste ekler)
-            const tableBody = document.getElementById("history-body");
-            const newRow = `<tr>
-                <td>${time}</td>
-                <td>İnek 01</td>
-                <td>${temp} °C</td>
-                <td>${temp > 39.5 ? 'Kritik' : 'Normal'}</td>
-            </tr>`;
-            tableBody.insertAdjacentHTML('afterbegin', newRow);
-        });
+        function verileriGuncelle() {
+            // İleride burası Firebase veya ESP32'den canlı veri çekecek
+            document.getElementById('web-sicaklik').innerText = ISTASYON_VERILERI.sicaklik + "°C";
+            document.getElementById('web-hareket').innerText = ISTASYON_VERILERI.hareket;
+        }
     </script>
 </body>
 </html>
