@@ -3,44 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agro Core - Akıllı İnek Takip Sistemi</title>
+    <title>Agro Core - Canlı Takip</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; text-align: center; }
-        .container { max-width: 1000px; margin: auto; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 0 20px rgba(0,0,0,0.1); }
-        h1 { color: #2c3e50; margin-bottom: 5px; }
-        p { color: #7f8c8d; margin-bottom: 30px; }
-        .grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
-        .chart-card { background: #fff; border: 1px solid #ddd; border-radius: 10px; padding: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        .chart-card h3 { margin-top: 0; color: #16a085; }
-        iframe { border-radius: 5px; max-width: 100%; }
-        .footer { margin-top: 30px; font-size: 0.9em; color: #bdc3c7; }
+        body { font-family: sans-serif; background-color: #f0f2f5; text-align: center; padding: 20px; }
+        .container { max-width: 1100px; margin: auto; background: white; padding: 20px; border-radius: 15px; shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; }
+        .card { border: 1px solid #ddd; padding: 10px; border-radius: 10px; background: #fff; }
+        h1 { color: #1b4f72; }
+        h3 { color: #2e86c1; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>Agro Core</h1>
-    <p>Akıllı İnek Takip ve Sağlık İzleme Sistemi</p>
+    <h1>Agro Core Canlı İzleme Paneli</h1>
+    <p>Akıllı İnek Takip Bilekliği - Veri Analiz Sistemi</p>
 
     <div class="grid">
-        <div class="chart-card">
-            <h3>Vücut Sıcaklığı (°C)</h3>
-            <iframe width="450" height="260" style="border: none;" src="https://thingspeak.com/channels/3355710/charts/1?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=60&type=line&update=15"></iframe>
+        <div class="card">
+            <h3>Vücut Sıcaklığı</h3>
+            <iframe width="350" height="210" style="border: none;" src="https://thingspeak.com/channels/3355710/charts/1?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=30&title=Sıcaklık+(C)&type=line"></iframe>
         </div>
 
-        <div class="chart-card">
-            <h3>Hareket Analizi</h3>
-            <iframe width="450" height="260" style="border: none;" src="https://thingspeak.com/channels/3355710/charts/2?bgcolor=%23ffffff&color=%233498db&dynamic=true&results=60&type=line&update=15"></iframe>
+        <div class="card">
+            <h3>Aktivite Seviyesi</h3>
+            <iframe width="350" height="210" style="border: none;" src="https://thingspeak.com/channels/3355710/charts/2?bgcolor=%23ffffff&color=%233498db&dynamic=true&results=30&title=Hareket&type=line"></iframe>
         </div>
-        
-        <div class="chart-card">
-            <h3>Anlık Durum</h3>
-           iframe width="450" ​​height="260" style="border: 1px solid #cccccc;" src="https://thingspeak.com/channels/3355710/charts/3?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=60&type=line&update=15"></iframe>
+
+        <div class="card">
+            <h3>Sistem Durum Analizi</h3>
+            <iframe width="350" height="210" style="border: none;" src="https://thingspeak.com/channels/3355710/charts/3?bgcolor=%23ffffff&color=%23f1c40f&dynamic=true&results=30&title=0:Normal+1:Kızgın+2:Ateş&type=line"></iframe>
         </div>
     </div>
 
-    <div class="footer">
-        © 2026 Agro Core - Geleceğin Hayvancılık Teknolojileri
+    <div style="margin-top: 30px; color: #7f8c8d;">
+        <p><strong>Not:</strong> Durum Analizi grafiğinde 1 Kızgınlık, 2 ise Yüksek Ateş anlamına gelir.</p>
     </div>
 </div>
 
